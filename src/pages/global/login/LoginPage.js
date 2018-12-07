@@ -5,7 +5,7 @@
 import axios from 'axios';
 
 import React, {Component} from 'react';
-import { ScrollView, Alert, View, Text, TextInput, Button } from 'react-native';
+import { StyleSheet, Image, TouchableHighlight, SafeAreaView, ScrollView, Alert, View, Text, TextInput, Button } from 'react-native';
 
 // Redux Components
 import {connect} from 'react-redux';
@@ -14,8 +14,13 @@ import {bindActionCreators} from 'redux';
 // Reducers Components
 import * as AuthStateActions from './../../../redux/reducers/AuthReducer';
 
+// Icons Components
+import Icon from 'react-native-vector-icons/FontAwesome5';
+
 // Configs dependencies
 import mainStyle from '../../../configs/mainStyle';
+import AsyncStorageHelper from "../../../tools/AsyncStorageHelper";
+import LoadingView from "../loader/LoadingView";
 
 
 class LoginPage extends Component {
@@ -23,9 +28,16 @@ class LoginPage extends Component {
     state = {
         mail: '',
         password: '',
-        isAuthenticated: false,
-        userToken: ''
+        isLoading: false,
     };
+
+    _onLoginLoad() {
+        this.setState({
+            isLoading: true
+        }, () => {
+            this._onLoginPress();
+        });
+    }
 
     _onLoginPress() {
         let {mail, password} = this.state;
@@ -38,16 +50,12 @@ class LoginPage extends Component {
         axios.post(`http://127.0.0.1:8000/api/auth/login`, { mail, password })
             .then(res => {
                 let code = res.data.code;
-                let message = res.data.message;
                 let token = res.data.token;
 
                 if (code === 200) {
-                    this.setState({
-                        isAuthenticated: true,
-                        userToken: token,
-                    }, () => {
-                        Alert.alert('Information', message, { cancelable: false });
-                    })
+                    AsyncStorageHelper.setUserToken(token);
+                    this.props.navigation.navigate('SignedIn');
+                    //Alert.alert('Information', message, { cancelable: false });
                 }
             })
             .catch(error => {
@@ -59,112 +67,87 @@ class LoginPage extends Component {
         //this.props.authStateActions.postLogin(mail, password);
     }
 
-    _onConfirmLogout() {
-        Alert.alert(
-            'Information',
-            'Êtes vous sûr de vouloir vous déconnecter', [
-                {text: 'Yes', onPress: () => this._onLogout()},
-                {text: 'No', style: 'cancel'},
-            ],
-            { cancelable: false }
-        );
+    _handleMail(text) {
+        let lowercasedText = text.toLowerCase();
+
+        this.setState({
+            mail: lowercasedText
+        });
     }
 
-    _onLogout() {
-        axios('http://127.0.0.1:8000/api/auth/logout', {headers: {'X-AUTH-TOKEN': this.state.userToken}})
-            .then(res => {
-                let code = res.data.code;
-                let message = res.data.message;
+    _handlePassword(text) {
+        let lowercasedText = text.toLowerCase();
 
-                if (code === 200) {
-                    this.setState({
-                        isAuthenticated: false,
-                        userToken: '',
-                    }, () => {
-                        Alert.alert('Information', message, {cancelable: false});
-                    })
-                }
-            })
-            .catch(error => {
-                let code = error.data.code;
-                let message = error.data.message;
+        this.setState({
+            password: lowercasedText
+        });
+    }
 
-                Alert.alert('Information', message, { cancelable: false });
-            });
+    // MARK : App LifeCycle
+    componentDidMount() {
+        this.props.authStateActions.getAsyncData();
+        console.log(this.props.authState);
     }
 
     render() {
-        let {isAuthenticated} = this.state;
+        let {authState} = this.props;
+        let {isLoading} = this.state;
 
-        if(isAuthenticated) {
-            return (
-                <ScrollView style={{padding: 20}}>
-                    <View><Text>You are connected</Text></View>
-
-                    <Button
-                        onPress={this._onConfirmLogout.bind(this)}
-                        title={"Déconnexion"}
-                    />
-
-                </ScrollView>
-            );
-        } else {
-
-            return (
-                <ScrollView style={{padding: 20}}>
-
-
-                    <View style={{
-                        justifyContent: 'center',
-                        alignContent: 'center',
-                        alignItems: 'center'
-                    }}>
-
-                        <Text
-                            style={{fontSize: 27}}>
-                            Login
-                        </Text>
-
-                        <TextInput
-                            style={{
-                                width: '70%',
-                                borderRadius: 20,
-                                textAlign: 'center',
-                                backgroundColor: 'grey',
-                                height: 44,
-                                marginTop: 40
-                            }}
-                            placeholder='Mail'
-                            onChangeText={(mail) => this.setState({mail})}
-                        />
-
-                        <TextInput
-                            style={{
-                                width: '70%',
-                                borderRadius: 20,
-                                textAlign: 'center',
-                                backgroundColor: 'grey',
-                                height: 44,
-                                marginTop: 20,
-                                marginBottom: 40
-                            }}
-                            placeholder='Password'
-                            onChangeText={(password) => this.setState({password})}
-                        />
-
-                        <Button
-                            onPress={this._onLoginPress.bind(this)}
-                            title="Connexion"
-                        />
-
-                        <Text>Mot de passe oublié ?</Text>
-                        <Text>Pas de compte ? Créez le votre</Text>
-
-                    </View>
-
-                </ScrollView>
+        if (isLoading) {
+            return(
+                <LoadingView/>
             )
         }
+
+            return (
+                <View style={styles.container}>
+                    <ScrollView
+                        contentContainerStyle={styles.scrollViewContainer}
+                    >
+                        <View style={styles.scrollViewContent}>
+                            <View style={styles.inputContainer}>
+                                <Icon style={styles.inputIcon} name={'envelope'}/>
+                                <TextInput style={styles.inputs}
+                                           placeholder="Email"
+                                           keyboardType="email-address"
+                                           underlineColorAndroid='transparent'
+                                           autoCapitalize='none'
+                                           onChangeText={(email) => this._handleMail(email)}/>
+                            </View>
+
+                            <View style={styles.inputContainer}>
+                                <Icon style={styles.inputIcon} name={'key'}/>
+                                <TextInput style={styles.inputs}
+                                           placeholder="Password"
+                                           secureTextEntry={true}
+                                           underlineColorAndroid='transparent'
+                                           autoCapitalize='none'
+                                           onChangeText={(password) => this._handlePassword(password)}/>
+                            </View>
+
+                            <TouchableHighlight
+                                style={[styles.buttonContainer, styles.loginButton]}
+                                onPress={this._onLoginLoad.bind(this)}
+                            >
+                                <Text style={styles.loginText}>Login</Text>
+                            </TouchableHighlight>
+
+                            <TouchableHighlight style={styles.buttonContainer}
+                                                onPress={() => this.onClickListener('restore_password')}>
+                                <Text>Forgot your password ?</Text>
+                            </TouchableHighlight>
+
+                            <TouchableHighlight
+                                style={styles.buttonContainer}
+                                onPress={() => {
+                                    this.props.navigation.push('SignUpPage')
+                                }}>
+                                <Text>No account ? Create your own</Text>
+                            </TouchableHighlight>
+                        </View>
+                    </ScrollView>
+                </View>
+            );
     }
 }
 
@@ -177,3 +160,55 @@ export default connect(
         authStateActions: bindActionCreators(AuthStateActions, dispatch)
     })
 )(LoginPage);
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#DCDCDC',
+    },
+    scrollViewContainer: {
+        flexGrow : 1,
+        justifyContent : 'center',
+    },
+    scrollViewContent: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    inputContainer: {
+        borderBottomColor: '#F5FCFF',
+        backgroundColor: '#FFFFFF',
+        borderRadius:30,
+        borderBottomWidth: 1,
+        width:250,
+        height:45,
+        marginBottom:20,
+        flexDirection: 'row',
+        alignItems:'center'
+    },
+    inputs:{
+        height:45,
+        marginLeft:16,
+        borderBottomColor: '#FFFFFF',
+        flex:1,
+    },
+    inputIcon:{
+        fontSize: 30,
+        marginLeft:15,
+        justifyContent: 'center'
+    },
+    buttonContainer: {
+        height:45,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom:20,
+        width:250,
+        borderRadius:30,
+    },
+    loginButton: {
+        backgroundColor: "#00b5ec",
+    },
+    loginText: {
+        color: 'white',
+    }
+});

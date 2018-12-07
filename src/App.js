@@ -7,12 +7,13 @@
  */
 
 import React, {Component} from 'react';
-import { SafeAreaView } from 'react-native';
+import {View} from 'react-native';
 
 // Redux components
 import { Provider } from 'react-redux';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
+
 
 // Reducers dependencies
 import reducers from './redux/reducers';
@@ -22,8 +23,12 @@ import reducers from './redux/reducers';
 //import images from "./configs/images";
 
 // Pages dependencies
-import LoginPage from "./pages/global/login/LoginPage";
-import HomePage from "./pages/global/home/HomePage";
+import {createRootNavigator, MainNavigator} from './navigators/MainNavigator';
+import AsyncStorageHelper from "./tools/AsyncStorageHelper";
+import LoadingView from "./pages/global/loader/LoadingView";
+import {createAppContainer} from "react-navigation";
+//import LoginPage from "./pages/global/login/LoginPage";
+//import HomePage from "./pages/global/home/HomePage";
 
 // Middleware, Reducers & Stores variables
 const middleware = [
@@ -51,28 +56,40 @@ export default class App extends Component {
     }
 
     state = {
-        isLoggedIn: false
+        isSignIn: false,
+        checkedSignIn: false
     };
 
-    render() {
-        let {isLoggedIn} = this.state;
+    async componentDidMount() {
+        let userToken = await AsyncStorageHelper.getUserToken();
 
-        let pageContent = null;
-        if (isLoggedIn) {
-            pageContent = (
-                <HomePage/>
-            )
+        if(userToken !== '') {
+            store.getState().authState.userToken = userToken;
+            this.setState({
+                isSignIn: true,
+                checkedSignIn: true
+            });
         } else {
-            pageContent = (
-                <LoginPage/>
+            this.setState({
+                checkedSignIn: true
+            });
+        }
+    }
+
+
+    render() {
+        let { isSignIn, checkedSignIn } = this.state;
+
+        if (!checkedSignIn) {
+            return(
+                <LoadingView/>
             )
         }
 
+        const Layout = createAppContainer(MainNavigator(isSignIn));
         return (
             <Provider store={store}>
-                <SafeAreaView>
-                    {pageContent}
-                </SafeAreaView>
+                <Layout/>
             </Provider>
         );
     }

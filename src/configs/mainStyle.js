@@ -12,5 +12,22 @@ import colors from './colors';
 export default StyleSheet.create({
     container: {
         flex: 1
+    },
+    centerContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    headerContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 40,
+        backgroundColor: '#3F51B5'
+    },
+    headerText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: 'white'
     }
 });
