@@ -6,6 +6,9 @@ import React, {Component} from 'react';
 import { ActivityIndicator,  Alert, Button, ScrollView, Text, View} from 'react-native';
 import { Card, ListItem } from 'react-native-elements'
 
+// Api Components
+import apiConfig from './../../../configs/apiConfig';
+
 // Redux Components
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -67,44 +70,17 @@ class HomePage extends Component {
     }
 
      static async _onLogout(params) {
-        let useToken = params.authState.userToken;
-
-        axios.post('http://127.0.0.1:8000/api/auth/logout', {headers: {'X-AUTH-TOKEN': userToken}})
-            .then(res => {
-                console.log(res);
-                let code = res.data.code;
-                let message = res.data.message;
-
-                AsyncStorageHelper.setUserToken('');
-                params.navigation.navigate('SignedOut');
-
-                /*if (code === 200) {
-                    this.setState({
-                        isAuthenticated: false,
-                        userToken: '',
-                    }, () => {
-                        Alert.alert('Information', message, {cancelable: false});
-                    })
-                }*/
-            })
-            .catch(error => {
-                let code = error.data.code;
-                let message = error.data.message;
-
-                Alert.alert('Information', message, { cancelable: false });
-            });
+        params.navigation.navigate('SignedOut');
     }
 
-    _getUserProfile() {
+    async _getUserProfile() {
         let { authState, navigation } = this.props;
 
-        let userToken = authState.userToken;
-        console.log("here");
-        console.log(userToken);
+        let userToken = await AsyncStorageHelper.getUserToken();
 
-        axios('http://127.0.0.1:8000/api/users/me', {headers: {'X-AUTH-TOKEN': userToken}})
+
+        axios(apiConfig.urlApi + '/users/me', {headers: {'X-AUTH-TOKEN': userToken}})
             .then(res => {
-                console.log(res);
                 let data = res.data.data;
                 this.setState({
                     isLoading: false,
@@ -112,7 +88,6 @@ class HomePage extends Component {
                 })
             })
             .catch(error => {
-                console.log(error);
                 let code = error.data.code;
                 let message = error.data.message;
 
@@ -125,7 +100,7 @@ class HomePage extends Component {
             authState: this.props.authState,
             navigation: this.props.navigation
         });
-        setTimeout(() => this._getUserProfile(), 1500)
+        this._getUserProfile();
     }
 
     render() {

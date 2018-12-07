@@ -61,7 +61,6 @@ export const postLogin = (mail, password) => {
 
 // Actions Dispatcher
 export default function (state = initialState, action = {}) {
-    console.log(action);
     switch (action.type) {
         case RECEIVE_ASYNC_STORAGE:
             return {

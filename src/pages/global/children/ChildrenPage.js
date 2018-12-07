@@ -17,10 +17,11 @@ import images from '../../../configs/images';
 // Component dependencies
 import LoadingView from "../loader/LoadingView";
 import HeaderTitle from "../../components/HeaderTitle";
+import Icon from "react-native-vector-icons/FontAwesome5";
 
 export default class ChildrenPage extends Component {
     static navigationOptions = {
-        title: 'Children(s)',
+        title: 'Children',
     };
 
     state = {
@@ -35,7 +36,6 @@ export default class ChildrenPage extends Component {
         let urlParams = '/childrens/' + childrenID;
         axios(apiConfig.urlApi + urlParams, {headers: {'X-AUTH-TOKEN': userToken}})
             .then(res => {
-                console.log(res);
                 let data = res.data.data;
                 this.setState({
                     isLoading: false,
@@ -43,7 +43,6 @@ export default class ChildrenPage extends Component {
                 })
             })
             .catch(error => {
-                console.log(error);
                 let code = error.data.code;
                 let message = error.data.message;
 
@@ -69,15 +68,17 @@ export default class ChildrenPage extends Component {
             )
         }
 
+        let schoolClass = childrenData.school_class;
         let schoolLevel = false;
-        if (sourceType === 'teacher') {
-            let schoolLevel = 'School level : ' + childrenData.school_level.label;
+
+        if (sourceType === 'parent') {
+            schoolLevel = 'School level : ' + schoolClass.school_level.label;
         }
 
-        let name = 'Name : ' + childrenData.firstname + " " + childrenData.lastname;
-        let borned_at = 'Date of birth : ' + childrenData.borned_at;
+        let name = childrenData.firstname + " " + childrenData.lastname;
+        let borned_at = childrenData.borned_at;
 
-        let schoolClass = childrenData.school_class;
+
 
         let schoolYear = 'School year : ' + schoolClass.year_start + " - " + schoolClass.year_end;
 
@@ -85,12 +86,38 @@ export default class ChildrenPage extends Component {
         let schoolTeacher = 'Teacher : ' + teacher.firstname + ' ' + teacher.lastname;
 
         let childrenActions = [];
+        childrenData.actions.map((map, index) => {
+            let id = map.id;
+            let name = map.label;
+
+            childrenActions.push(
+                <ListItem
+                    key={'task' + index}
+                    leftIcon={<Icon style={mainStyle.inputIcon} name={'tasks'}/>}
+                    title={name}
+                    hideChevron={true}
+                />
+            )
+        });
+
         return(
             <ScrollView contentContainerStyle={{justifyContent: 'center'}}>
 
                 <HeaderTitle text={'General informations'}/>
-                <ListItem key={'name'} title={name} hideChevron={true}/>
-                <ListItem key={'birth'} title={borned_at} hideChevron={true}/>
+
+                <ListItem
+                    key={'name'}
+                    title={name}
+                    leftAvatar={{ source: { uri: 'https://www.resume.stevenfrancony.fr/dist/img/profile.png' } }}
+                    hideChevron={true}
+                />
+
+                <ListItem
+                    key={'borned_at'}
+                    leftIcon={<Icon style={mainStyle.inputIcon} name={'birthday-cake'}/>}
+                    title={borned_at}
+                    hideChevron={true}
+                />
 
                 <HeaderTitle text={schoolYear}/>
                 {schoolLevel  &&  <ListItem key={'schoolLevel'} title={schoolLevel} hideChevron={true}/>}
@@ -98,9 +125,9 @@ export default class ChildrenPage extends Component {
                 <ListItem key={'score'} title={'Score : ' + childrenData.score} hideChevron={true}/>
                 <ListItem key={'childrenLevel'} title={'Level : ' + childrenData.level} hideChevron={true}/>
 
-                {/*<Card title="Actions">
-                    {childrenActions}
-                </Card>*/}
+
+                <HeaderTitle text={'Tasks list'}/>
+                {childrenActions}
 
             </ScrollView>
         );

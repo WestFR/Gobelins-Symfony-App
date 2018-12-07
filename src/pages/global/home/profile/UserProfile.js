@@ -3,7 +3,7 @@
  */
 
 import React, {Component} from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import { ListItem } from 'react-native-elements';
 
 import Moment from 'react-moment';
@@ -24,6 +24,7 @@ export default class UserProfile extends Component {
 
     render() {
         let {profil} = this.props;
+        let dateTimeFormat = 'MMMM Do YYYY, h:mm:ss a';
 
         return(
             <View>

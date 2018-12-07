@@ -8,6 +8,9 @@ import { Card, ListItem } from 'react-native-elements'
 // Configs dependencies
 import mainStyle from '../../../../configs/mainStyle';
 import images from '../../../../configs/images';
+import HeaderTitle from "../../../components/HeaderTitle";
+import {View} from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome5";
 
 export default class TeacherProfile extends Component {
     props: {
@@ -35,15 +38,19 @@ export default class TeacherProfile extends Component {
                 <ListItem
                     key={'school-' + index}
                     title={name + " (" + year + ")"}
+                    chevron={true}
+                    leftIcon={<Icon style={mainStyle.inputIcon} name={'school'}/>}
                     onPress={this._onSchoolNavigate.bind(this, idTeacher, id)}
+                    hide={true}
                 />
             )
         });
 
         return(
-            <Card title="My School Classes">
+            <View>
+                <HeaderTitle text={'My classes'}/>
                 {schoolItems}
-            </Card>
+            </View>
         )
     }
 }

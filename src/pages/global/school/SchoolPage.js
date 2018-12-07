@@ -31,14 +31,11 @@ export default class SchoolPage extends Component {
     _getSpecificSchoolData(teacherID, schoolID) {
         let {navigation} = this.props;
         let userToken = navigation.getParam('userToken', '');
-        console.log(userToken);
 
         // + '/classes/' + schoolID
         let urlParams = '/classes/' + schoolID;
-        console.log(apiConfig.urlApi + urlParams);
         axios(apiConfig.urlApi + urlParams, {headers: {'X-AUTH-TOKEN': userToken}})
             .then(res => {
-                console.log(res);
                 let data = res.data.data;
                 this.setState({
                     isLoading: false,
@@ -46,7 +43,6 @@ export default class SchoolPage extends Component {
                 })
             })
             .catch(error => {
-                console.log(error);
                 let code = error.data.code;
                 let message = error.data.message;
 

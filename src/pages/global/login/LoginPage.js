@@ -7,6 +7,9 @@ import axios from 'axios';
 import React, {Component} from 'react';
 import { StyleSheet, Image, TouchableHighlight, SafeAreaView, ScrollView, Alert, View, Text, TextInput, Button } from 'react-native';
 
+// Api Components
+import apiConfig from './../../../configs/apiConfig';
+
 // Redux Components
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -39,7 +42,17 @@ class LoginPage extends Component {
         });
     }
 
-    _onLoginPress() {
+    _logoutLastUser() {
+        axios.post(apiConfig.urlApi + '/auth/logout', {}, {headers: {'X-AUTH-TOKEN': this.props.authState.userToken}})
+            .then(res => {
+                AsyncStorageHelper.setUserToken('');
+            })
+            .catch(error => {
+                AsyncStorageHelper.setUserToken('');
+            });
+    }
+
+    async _onLoginPress() {
         let {mail, password} = this.state;
 
         if (mail === '' || password === '') {
@@ -47,14 +60,16 @@ class LoginPage extends Component {
             return;
         }
 
-        axios.post(`http://127.0.0.1:8000/api/auth/login`, { mail, password })
+        axios.post(apiConfig.urlApi + '/auth/login', { mail, password })
             .then(res => {
                 let code = res.data.code;
                 let token = res.data.token;
 
+                AsyncStorageHelper.setUserToken(token);
+
                 if (code === 200) {
-                    AsyncStorageHelper.setUserToken(token);
-                    this.props.navigation.navigate('SignedIn');
+
+                    setTimeout(()=> {this.props.navigation.navigate('SignedIn')}, 2500);
                     //Alert.alert('Information', message, { cancelable: false });
                 }
             })
@@ -86,7 +101,7 @@ class LoginPage extends Component {
     // MARK : App LifeCycle
     componentDidMount() {
         this.props.authStateActions.getAsyncData();
-        console.log(this.props.authState);
+        this._logoutLastUser();
     }
 
     render() {

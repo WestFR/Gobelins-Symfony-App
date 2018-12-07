@@ -8,6 +8,8 @@ import { Card, ListItem } from 'react-native-elements'
 // Configs dependencies
 import mainStyle from '../../../../configs/mainStyle';
 import images from '../../../../configs/images';
+import HeaderTitle from "../../../components/HeaderTitle";
+import {View} from "react-native";
 
 export default class ParentProfile extends Component {
     props: {
@@ -33,16 +35,18 @@ export default class ParentProfile extends Component {
                 <ListItem
                     key={'school-' + index}
                     title={name}
-                    leftAvatar={{ rounded: true, source:images.emptyAvatar}}
+                    chevron={true}
+                    leftAvatar={{ source: { uri: 'https://www.resume.stevenfrancony.fr/dist/img/profile.png' } }}
                     onPress={this._onChildrenNavigate.bind(this, idChildren)}
                 />
             )
         });
 
         return(
-            <Card title="My Childrens">
+            <View>
+                <HeaderTitle text={'My children(s)'}/>
                 {childrenItems}
-            </Card>
+            </View>
         )
     }
 }
