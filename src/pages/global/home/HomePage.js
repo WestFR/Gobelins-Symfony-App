@@ -36,6 +36,7 @@ class HomePage extends Component {
         const { params = {} } = navigation.state;
 
         return {
+            title: 'Home',
             headerLeft: (<View></View>),
             headerRight: (
                 <View>
@@ -120,11 +121,11 @@ class HomePage extends Component {
     }
 
     componentDidMount() {
-        this._getUserProfile();
         this.props.navigation.setParams({
             authState: this.props.authState,
             navigation: this.props.navigation
         });
+        setTimeout(() => this._getUserProfile(), 1500)
     }
 
     render() {
@@ -144,7 +145,6 @@ class HomePage extends Component {
                     {userProfile.type === "parent" &&
                     <ParentProfile
                         navigation={navigation}
-                        idParent={userProfile.id}
                         childrens={userProfile.childrens}
                         userToken={authState.userToken}
                     />

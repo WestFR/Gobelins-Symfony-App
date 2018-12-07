@@ -3,7 +3,7 @@
  */
 
 import React, {Component} from 'react';
-import {Alert, ScrollView} from "react-native";
+import {Alert, ScrollView, Text, View} from "react-native";
 import { Card, ListItem } from 'react-native-elements'
 
 // Axios dependencies
@@ -16,8 +16,12 @@ import images from '../../../configs/images';
 
 // Component dependencies
 import LoadingView from "../loader/LoadingView";
+import HeaderTitle from "../../components/HeaderTitle";
 
 export default class SchoolPage extends Component {
+    static navigationOptions = {
+        title: 'Your class',
+    };
 
     state = {
         isLoading: true,
@@ -26,7 +30,7 @@ export default class SchoolPage extends Component {
 
     _getSpecificSchoolData(teacherID, schoolID) {
         let {navigation} = this.props;
-        let userToken = navigation.getParam('userToken', '')
+        let userToken = navigation.getParam('userToken', '');
         console.log(userToken);
 
         // + '/classes/' + schoolID
@@ -50,11 +54,10 @@ export default class SchoolPage extends Component {
             });
     }
 
-    _onChildrenNavigate(childrenId) {
+    _onChildrenNavigate(childrenID) {
         let {navigation} = this.props;
         let userToken = navigation.getParam('userToken', '');
-
-        //navigation.navigate('ChildrenPage', {idChildren: childrenID, idParent: parentID, userToken: userToken});
+        navigation.navigate('ChildrenPage', {idChildren: childrenID, source: 'parent', userToken: userToken});
     }
 
     componentDidMount() {
@@ -73,8 +76,8 @@ export default class SchoolPage extends Component {
             )
         }
 
-        let name = schoolData.label;
-        let year = schoolData.year_start + " - " + schoolData.year_end;
+        let schoolLevel = schoolData.school_level.label;
+        let schoolYear = ' (' + schoolData.year_start + " - " + schoolData.year_end + ')';
 
         let childrenSchoolItems = [];
         schoolData.childrens.map((item, index) => {
@@ -85,7 +88,8 @@ export default class SchoolPage extends Component {
                 <ListItem
                     key={'school-' + index}
                     title={name}
-                    leftAvatar={{ rounded: true, source:images.emptyAvatar}}
+                    chevron={true}
+                    leftAvatar={{ source: { uri: 'https://www.resume.stevenfrancony.fr/dist/img/profile.png' } }}
                     onPress={this._onChildrenNavigate.bind(this, id)}
                 />
             )
@@ -93,14 +97,8 @@ export default class SchoolPage extends Component {
 
         return(
             <ScrollView contentContainerStyle={{justifyContent: 'center'}}>
-
-                <ListItem key={'name'} title={name} hideChevron={true}/>
-                <ListItem key={'year'} title={year} hideChevron={true}/>
-
-                <Card title="Childrens">
-                    {childrenSchoolItems}
-                </Card>
-
+                <HeaderTitle text={schoolLevel + schoolYear}/>
+                {childrenSchoolItems}
             </ScrollView>
         );
     }

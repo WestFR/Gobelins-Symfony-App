@@ -12,14 +12,13 @@ import images from '../../../../configs/images';
 export default class ParentProfile extends Component {
     props: {
         navigation: null,
-        idParent: null,
         childrens: [],
         userToken: ''
     };
 
-    _onChildrenNavigate(parentID, childrenID) {
+    _onChildrenNavigate(childrenID) {
         let {userToken, navigation} = this.props;
-        navigation.navigate('ChildrenPage', {idChildren: childrenID, idParent: parentID, userToken: userToken});
+        navigation.navigate('ChildrenPage', {idChildren: childrenID, source: 'parent', userToken: userToken});
     }
 
     render() {
@@ -35,7 +34,7 @@ export default class ParentProfile extends Component {
                     key={'school-' + index}
                     title={name}
                     leftAvatar={{ rounded: true, source:images.emptyAvatar}}
-                    onPress={this._onChildrenNavigate.bind(this, idParent, idChildren)}
+                    onPress={this._onChildrenNavigate.bind(this, idChildren)}
                 />
             )
         });

@@ -17,7 +17,7 @@ export default class TeacherProfile extends Component {
         userToken: ''
     };
 
-    _onSchoolNavigate(schoolID, teacherID) {
+    _onSchoolNavigate(teacherID, schoolID) {
         let {userToken, navigation} = this.props;
         navigation.navigate('SchoolPage', {idSchool: schoolID, idTeacher: teacherID, userToken: userToken});
     }

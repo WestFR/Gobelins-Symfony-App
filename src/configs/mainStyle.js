@@ -25,6 +25,12 @@ export default StyleSheet.create({
         height: 40,
         backgroundColor: '#3F51B5'
     },
+    inputIcon:{
+        fontSize: 22,
+        marginLeft:10,
+        marginRight:10,
+        justifyContent: 'center'
+    },
     headerText: {
         fontSize: 16,
         fontWeight: 'bold',
