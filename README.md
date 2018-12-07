@@ -36,15 +36,11 @@
 
 6. Now, you can build and run this application and develop your functions !
 
-## Contribute
 
-We would love you for the contribution to ``AwakensWars`` project, check the ``LICENSE`` file for more info.
+## What's else ?
 
+Enjoy (and put a star if you like this app) !
 
-## Meta
-
-Distributed under the MIT license. See ``LICENSE`` for more information.
-
-
-[license-image]: https://img.shields.io/badge/License-MIT-blue.svg
-[license-url]: LICENSE
+=======
+# gobelins_symfony_app
+See https://github.com/alberluc/gobelins_symfony_api/blob/master/README.md
