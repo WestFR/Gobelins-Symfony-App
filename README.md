@@ -1,12 +1,17 @@
 # eSchool Mobile App
 
+> ESchool is a platform on which the professors are going to be able to estimate the children of their class on their behavior.
+
 :warning:
 Due to the development environment and connection to the Symfony server, it is best to use only an Android or iOS emulator for the URLs to match !
 :warning:
 
+## eSchool API
+See https://github.com/alberluc/gobelins_symfony_api/blob/master/README.md
 
 ## Features
 
+- [x] Connection with an amazing API : https://github.com/alberluc/gobelins_symfony_api/
 - [x] Based on react-native technology : https://facebook.github.io/react-native/
 - [x] ListView / Selection
 - [x] About page examples with Alert
@@ -40,6 +45,8 @@ Due to the development environment and connection to the Symfony server, it is b
 `react-native run-android (only on your emulator).`<br>
 `react-native run-ios (on mac only, xcode is necessary + simulator).`
 
+2. If you are using fixtures in Symfony API, the default passwords of users for login to this application is `0000`.
+
 7. Now, you can build and run this application and develop your functions !
 
 8. If you any problem, contact us at :
@@ -49,6 +56,3 @@ Due to the development environment and connection to the Symfony server, it is b
 ## What's else ?
 
 Enjoy (and put a star if you like this app) !
-
-# gobelins_symfony_app
-See https://github.com/alberluc/gobelins_symfony_api/blob/master/README.md
